@@ -1,0 +1,14 @@
+services:
+  mongodb:
+    image: mongodb/mongodb-community-server:7.0-ubi9
+    environment:
+      MONGODB_INITDB_ROOT_USERNAME: admin
+      MONGODB_INITDB_ROOT_PASSWORD: adminpwd
+      MONGO_USER: mongouser
+      MONGO_PASSWORD: mongopwd
+      MONGODB_INITDB_DATABASE: journeyhub
+      MONGODB_INITDB_HOST: 0.0.0.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./.docker/mongo.entrypoint.sh:/docker-entrypoint-initdb.d/init.sh:ro
