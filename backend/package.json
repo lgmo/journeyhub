@@ -1,0 +1,37 @@
+{
+  "name": "journeyhub",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/app.js",
+  "include": [
+    "src/**/*",
+    "tests/**/*"
+  ],
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "dev": "nodemon src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lgmo/journeyhub.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/lgmo/journeyhub/issues"
+  },
+  "homepage": "https://github.com/lgmo/journeyhub#readme",
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "jest": "^30.0.5",
+    "joi": "^18.0.1",
+    "mongodb": "^6.18.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "supertest": "^7.1.4"
+  }
+}
