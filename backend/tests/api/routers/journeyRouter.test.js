@@ -1,6 +1,6 @@
 import { describe, afterEach, it, expect } from "@jest/globals";
 import request from "supertest";
-import client from "../../../src/common/db.js";
+import dbClientFactory from "../../../src/common/db.js";
 import app from "../../../src/api/api.js";
 import { v4 as uuidv4 } from "uuid";
 import journeyRepositoryFactory from "../../../src/repositories/journeyRepository.js";
@@ -12,7 +12,7 @@ describe("journeyRouter", () => {
   let appInstance;
 
   beforeAll(() => {
-    dbClient = client();
+    dbClient = dbClientFactory("test");
     const journeyRepository = journeyRepositoryFactory(dbClient);
     const journeyController = journeyControllerFactory(journeyRepository);
     const journeyRouter = journeyRouterFactory(journeyController);
@@ -40,7 +40,7 @@ describe("journeyRouter", () => {
             {
               type: "email",
               content: "content",
-              runsAt: new Date().toISOString().split("T")[1],
+              runsAt: "12:00:00",
             },
           ],
         ],
@@ -65,24 +65,106 @@ describe("journeyRouter", () => {
       expect(res.body.updatedAt).toBeDefined();
     });
 
-    it("should fail due to bad request", async () => {
+    it("should not create a journey without name", async () => {
       const journeyData = {
         actions: [
           [
             {
               type: "email",
               content: "content",
-              runsAt: new Date().toISOString().split("T")[1],
+              runsAt: "12:00:00",
             },
           ],
         ],
       };
 
-      const mockJourney = {
-        id: uuidv4(),
-        ...journeyData,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+      const res = await request(appInstance)
+        .post("/api/v1/journeys")
+        .send(journeyData);
+
+      expect(res.status).toBe(400);
+    });
+
+    it("should not create a journey with an action without type", async () => {
+      const journeyData = {
+        actions: [
+          [
+            {
+              content: "content",
+              runsAt: "12:00:00",
+            },
+          ],
+        ],
+      };
+
+      const res = await request(appInstance)
+        .post("/api/v1/journeys")
+        .send(journeyData);
+
+      expect(res.status).toBe(400);
+    });
+
+    it("should not create a journey without actions", async () => {
+      const journeyData = {
+        name: "Test Journey",
+      };
+
+      const res = await request(appInstance)
+        .post("/api/v1/journeys")
+        .send(journeyData);
+
+      expect(res.status).toBe(400);
+    });
+
+    it("should not create a journey with an action without content", async () => {
+      const journeyData = {
+        actions: [
+          [
+            {
+              type: "email",
+              runsAt: "23:59:59",
+            },
+          ],
+        ],
+      };
+
+      const res = await request(appInstance)
+        .post("/api/v1/journeys")
+        .send(journeyData);
+
+      expect(res.status).toBe(400);
+    });
+
+    it("should not create a journey with an action without runsAt", async () => {
+      const journeyData = {
+        actions: [
+          [
+            {
+              type: "email",
+              content: "content",
+            },
+          ],
+        ],
+      };
+
+      const res = await request(appInstance)
+        .post("/api/v1/journeys")
+        .send(journeyData);
+
+      expect(res.status).toBe(400);
+    });
+
+    it("should not create a journey with an action with an invalid runsAt", async () => {
+      const journeyData = {
+        actions: [
+          [
+            {
+              type: "email",
+              content: "content",
+              runsAt: "invalid date",
+            },
+          ],
+        ],
       };
 
       const res = await request(appInstance)

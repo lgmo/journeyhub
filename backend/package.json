@@ -24,6 +24,8 @@
   },
   "homepage": "https://github.com/lgmo/journeyhub#readme",
   "dependencies": {
+    "@joi/date": "^2.1.1",
+    "bull": "^4.16.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "jest": "^30.0.5",

@@ -22,7 +22,7 @@ async function initDatabase(dbname = dbConfig.database) {
 
 let client = null;
 
-export default (dbname = dbConfig.database) => ({
+const dbClientFactory = (dbname = dbConfig.database) => ({
   getDB: async () => {
     if (!client) {
       client = await initDatabase(dbname);
@@ -36,3 +36,5 @@ export default (dbname = dbConfig.database) => ({
     }
   },
 });
+
+export default dbClientFactory;
