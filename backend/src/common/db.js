@@ -24,7 +24,6 @@ let client = null;
 
 export default (dbname = dbConfig.database) => ({
   getDB: async () => {
-    console.log(dbname);
     if (!client) {
       client = await initDatabase(dbname);
     }
