@@ -1,38 +1,29 @@
-import { MongoClient } from "mongodb";
-import dbConfig from "../config/dbConfig.js";
+import { MongoClient } from 'mongodb';
+import dbConfig from '../config/dbConfig.js';
 
-async function initDatabase(dbname = dbConfig.database) {
-  const uri = `mongodb://${dbConfig.username}:${dbConfig.password}@${dbConfig.host}:${dbConfig.port}/${dbname}`;
-  const client = new MongoClient(uri);
-
-  const db = client.db(dbname);
-
-  try {
-    await client.connect();
-
-    await db.createCollection("users");
-    await db.createCollection("journeys");
-  } catch (error) {
-    console.error(`Error connecting to MongoDB: ${error.message}`);
-  } finally {
-    await client.close();
-  }
-  return client;
+async function getclient(dbname) {
+	try {
+		const uri = `mongodb://${dbConfig.username}:${dbConfig.password}@${dbConfig.host}:${dbConfig.port}/${dbname}`;
+		const client = new MongoClient(uri);
+		return client;
+	} catch (error) {
+		console.error('Failed to create MongoDB client:', error);
+	}
 }
 
-let client = null;
+async function dbClientFactory(dbName = dbConfig.database) {
+	const client = await getclient(dbName);
 
-export default (dbname = dbConfig.database) => ({
-  getDB: async () => {
-    if (!client) {
-      client = await initDatabase(dbname);
-    }
-    await client.connect();
-    return client.db(dbname);
-  },
-  close: async () => {
-    if (client) {
-      await client.close();
-    }
-  },
-});
+	return {
+		getCollection(collectionName) {
+			return client.db(dbName).collection(collectionName);
+		},
+		async close() {
+			if (client) {
+				await client.close();
+			}
+		},
+	};
+}
+
+export default dbClientFactory;
